@@ -25,21 +25,19 @@
   left: 0;
 }
 
-:host .thing {
+:host svg.thing {
+  background-color: transparent;
+  fill: #eee;
   position: absolute;
   width: 30px;
   height: 30px;
   left: 50%;
   top: 25%;
-  background-color: white;
   cursor: move;
   z-index: 3;
 }
 
-:host .thing.is-circle {
-  border-radius: 50%;
-}
-
-:host .thing.is-triangle {
-
+:host svg.thing:hover {
+  stroke: white;
+  stroke-width: 1px;
 }

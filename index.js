@@ -7,6 +7,12 @@ const view = html`
     <div class="surface"></div>
     <div class="bag"></div>
   </div>`
+const spriteFile = './sprites.svg'
+const SPRITES = [
+  'circle',
+  'triangle',
+  'square'
+]
 
 document.body.appendChild(view)
 
@@ -28,6 +34,15 @@ function spawnThing () {
 }
 
 function Thing () {
+  const sprite = getRandomSprite()
   this.acquired = false
-  this.el = html`<div class="thing is-circle"></div>`
+  this.el = html`
+    <svg viewBox="0 0 100 100" class="thing">
+      <use xlink:href=${sprite}></use>
+    </svg>`
+}
+
+function getRandomSprite () {
+  const index = Math.floor(Math.random() * SPRITES.length)
+  return `${spriteFile}#${SPRITES[index]}`
 }
