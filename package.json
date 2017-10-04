@@ -1,0 +1,29 @@
+{
+  "name": "sketches-inventory",
+  "version": "1.0.0",
+  "description": "put things in bags",
+  "main": "index.js",
+  "scripts": {
+    "start": "budo index.js --live --title inventory -- -t [ sheetify ]"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/kareniel/sketches-inventory.git"
+  },
+  "keywords": [
+    "gamedev"
+  ],
+  "author": "kareniel",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/kareniel/sketches-inventory/issues"
+  },
+  "homepage": "https://github.com/kareniel/sketches-inventory#readme",
+  "devDependencies": {
+    "budo": "^10.0.4",
+    "sheetify": "^6.2.0"
+  },
+  "dependencies": {
+    "bel": "^5.1.3"
+  }
+}
