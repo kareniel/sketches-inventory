@@ -1,3 +1,4 @@
+const html = require('bel')
 const Draggable = require('./draggable')
 const types = [{
   label: 'A square thing',
@@ -12,9 +13,8 @@ const types = [{
 
 const SPRITE_FILE = './sprites.svg'
 
-module.exports.Thing = function Thing (type) {
-  if (!(this instanceof Thing)) return new Thing()
-  Draggable.call(this, thing.el)
+function Thing (type) {
+  if (!(this instanceof Thing)) return new Thing(type)
 
   this.label = type.label
   this.sprite = type.sprite
@@ -23,11 +23,22 @@ module.exports.Thing = function Thing (type) {
     <svg viewBox="0 0 100 100" class="thing">
       <use xlink:href=${this.sprite}></use>
     </svg>`
+
+  Draggable.call(this, this.el)
 }
 
-module.exports.createRandomThing = function createRandomThing () {
+Thing.prototype = Object.create(Draggable.prototype)
+
+function createRandomThing () {
   const index = Math.floor(Math.random() * types.length)
   const type = types[index]
+  const thing = Thing(type)
 
-  return Thing(type)
+  return thing
+}
+
+
+module.exports = {
+  Thing,
+  createRandomThing
 }

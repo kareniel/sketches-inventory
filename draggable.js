@@ -1,16 +1,16 @@
 function Draggable (el) {
+  if (!(this instanceof Draggable)) return new Draggable(el)
+
   const _this = this
   const rect = el.getBoundingClientRect()
 
-  this._el = el
+  if (!this.el) this.el = el
   this.w = el.clientWidth
   this.h = el.clientHeight
-  this.bodyRect = document.body.getBoundingClientRect()
-  this.parentRect = _this._el.parentNode.getBoundingClientRect()
-  this._initialPosition = { 
-    x: el.offsetLeft, 
-    y: el.offsetTop
-  }
+  this.bodyRect = {}
+  this.parentRect = {}
+  this._initialPosition = { x: null, y: null }
+
   this._onMouseDown = onMouseDown
   this._handlers = []
 
@@ -19,8 +19,10 @@ function Draggable (el) {
   function onMouseDown (e) {
     e.preventDefault()
 
+    if (!_this._initialPosition.x) _this.setPositionAsInitial()
+
     _this.bodyRect = document.body.getBoundingClientRect()
-    _this.parentRect = _this._el.parentNode.getBoundingClientRect()
+    _this.parentRect = _this.el.parentNode.getBoundingClientRect()
 
     document.addEventListener('mouseup', onMouseUp)
     document.addEventListener('mousemove', onMouseMove)
@@ -58,21 +60,23 @@ function Draggable (el) {
 
 Draggable.prototype.resetPosition = function () {
   requestAnimationFrame(() => {
-    this._el.style.left = this._initialPosition.x + 'px'
-    this._el.style.top = this._initialPosition.y + 'px'
+    this.el.style.left = this._initialPosition.x + 'px'
+    this.el.style.top = this._initialPosition.y + 'px'
   })
 }
 
 Draggable.prototype.setPosition = function (x, y) {
   requestAnimationFrame(() => {
-    this._el.style.left = x + 'px'
-    this._el.style.top = y + 'px'
+    this.el.style.left = x + 'px'
+    this.el.style.top = y + 'px'
   })
 }
 
-Draggable.prototype.fixPosition = function (x, y) {
-  this._initialPosition.x = this._el.offsetLeft
-  this._initialPosition.y = this._el.offsetTop
+Draggable.prototype.setPositionAsInitial = function () {
+  const rect = this.el.getBoundingClientRect()
+
+  this._initialPosition.x = rect.left
+  this._initialPosition.y = rect.top
 }
 
 Draggable.prototype.register = function (selector, callback) {
@@ -90,7 +94,7 @@ Draggable.prototype.unregister = function (selector, callback) {
 }
 
 Draggable.prototype.destroy = function () {
-  this._el.removeEventListener(this._onMouseDown)
+  this.el.removeEventListener(this._onMouseDown)
 }
 
 function elementsAtLocation (x, y) {
