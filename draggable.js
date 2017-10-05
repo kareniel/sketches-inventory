@@ -1,23 +1,18 @@
 const Emitter = require('./emitter')
 
-const delay = 100
-
-function Draggable (el) {
-  if (!(this instanceof Draggable)) return new Draggable(el)
+function Draggable (el, params = {}) {
+  if (!(this instanceof Draggable)) return new Draggable(el, params)
 
   Emitter.call(this)
 
-  const _this = this
+  this.params = {
+    delay: params.delay || 100
+  }
 
-  if (!this.el) this.el = el
-  this.w = el.clientWidth
-  this.h = el.clientHeight
-  this.bodyRect = {}
-  this.parentRect = {}
+  this.el = el
+  this.bodyRect = null
+  this.parentRect = null
   this._initialPosition = { x: el.offsetLeft, y: el.offsetTop }
-
-  this._onMouseDown = onMouseDown
-  this._handlers = []
 
   el.addEventListener('mousedown', onMouseDown)
 
@@ -35,7 +30,7 @@ function Draggable (el) {
 
       document.addEventListener('mouseup', onDragEnd)
       document.addEventListener('mousemove', onDrag)
-    }, delay)
+    }, _this.params.delay)
   }
 
   function onClick (e) {
@@ -47,10 +42,8 @@ function Draggable (el) {
   function onDragEnd (e) {
     document.removeEventListener('mouseup', onDragEnd)
     document.removeEventListener('mousemove', onDrag)
-    
-    const { x, y } = e
 
-    _this.emit('drop', elementsAtLocation(x, y))
+    _this.emit('drop', e)
   }
 
   function onDrag (e) {
@@ -66,10 +59,8 @@ Draggable.prototype = Object.create(Emitter.prototype)
 Draggable.prototype.setPositionAsInitial = function () {
   const { offsetLeft, offsetTop, clientWidth, clientHeight } = this.el
 
-
   this._initialPosition.x = offsetLeft
   this._initialPosition.y = offsetTop
-  console.log(this._initialPosition)
 }
 
 Draggable.prototype.resetPosition = function () {
@@ -84,25 +75,6 @@ Draggable.prototype.setPosition = function (x, y) {
     this.el.style.left = x + 'px'
     this.el.style.top = y + 'px'
   })
-}
-
-Draggable.prototype.destroy = function () {
-  this.el.removeEventListener(this._onMouseDown)
-}
-
-function elementsAtLocation (x, y) {
-  const stack = []
-  let el = {}
-
-  while (el.tagName !== 'HTML') {
-    el = document.elementFromPoint(x, y)
-    stack.push(el)
-    el.style.pointerEvents = 'none'
-  }
-
-  stack.forEach(el => el.style.pointerEvents = '')
-
-  return stack
 }
 
 module.exports = Draggable

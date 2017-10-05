@@ -1,17 +1,5 @@
 const html = require('bel')
 const Draggable = require('./draggable')
-const types = [{
-  label: 'A square thing',
-  sprite: './sprites.svg#square' 
-}, {
-  label: 'A triangle thing',
-  sprite: './sprites.svg#triangle'
-}, {
-  label: 'A circle thing',
-  sprite: './sprites.svg#circle'
-}]
-
-const SPRITE_FILE = './sprites.svg'
 
 function Thing (type, el) {
   if (!(this instanceof Thing)) return new Thing(type, el)
@@ -28,15 +16,4 @@ function Thing (type, el) {
 
 Thing.prototype = Object.create(Draggable.prototype)
 
-function createRandomThing (el) {
-  const index = Math.floor(Math.random() * types.length)
-  const type = types[index]
-  const thing = Thing(type, el)
-
-  return thing
-}
-
-module.exports = {
-  Thing,
-  createRandomThing
-}
+module.exports = Thing
