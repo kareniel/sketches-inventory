@@ -1,19 +1,20 @@
 const Emitter = require('./emitter')
 
+const delay = 100
+
 function Draggable (el) {
   if (!(this instanceof Draggable)) return new Draggable(el)
 
   Emitter.call(this)
 
   const _this = this
-  const rect = el.getBoundingClientRect()
 
   if (!this.el) this.el = el
   this.w = el.clientWidth
   this.h = el.clientHeight
   this.bodyRect = {}
   this.parentRect = {}
-  this._initialPosition = { x: null, y: null }
+  this._initialPosition = { x: el.offsetLeft, y: el.offsetTop }
 
   this._onMouseDown = onMouseDown
   this._handlers = []
@@ -23,35 +24,53 @@ function Draggable (el) {
   function onMouseDown (e) {
     e.preventDefault()
 
-    if (!_this._initialPosition.x) _this.setPositionAsInitial()
+    document.addEventListener('mouseup', onClick)
 
-    _this.bodyRect = document.body.getBoundingClientRect()
-    _this.parentRect = _this.el.parentNode.getBoundingClientRect()
+    _this._timeout = setTimeout(() => {
+      clearTimeout(_this._timeout)
+      document.removeEventListener('mouseup', onClick)
 
-    document.addEventListener('mouseup', onMouseUp)
-    document.addEventListener('mousemove', onMouseMove)
+      _this.bodyRect = document.body.getBoundingClientRect()
+      _this.parentRect = _this.el.parentNode.getBoundingClientRect()
+
+      document.addEventListener('mouseup', onDragEnd)
+      document.addEventListener('mousemove', onDrag)
+    }, delay)
   }
 
-  function onMouseUp (e) {
-    document.removeEventListener('mouseup', onMouseUp)
-    document.removeEventListener('mousemove', onMouseMove)
+  function onClick (e) {
+    clearTimeout(_this._timeout)
+    document.removeEventListener('mouseup', onClick)
+    _this.emit('click', e)
+  }
+
+  function onDragEnd (e) {
+    document.removeEventListener('mouseup', onDragEnd)
+    document.removeEventListener('mousemove', onDrag)
     
     const { x, y } = e
 
     _this.emit('drop', elementsAtLocation(x, y))
   }
 
-  function onMouseMove (e) {
-      const leftDiff = _this.parentRect.left - _this.bodyRect.left
-      const topDiff = _this.parentRect.top - _this.bodyRect.top
-      const x = e.x - leftDiff - (_this.w / 2)
-      const y = e.y - topDiff - (_this.h / 2)
+  function onDrag (e) {
+    const x = e.x - _this.parentRect.left - (_this.el.clientWidth / 2)
+    const y = e.y - _this.parentRect.top - (_this.el.clientHeight / 2)
 
-      _this.setPosition.call(_this, x, y)
+    _this.setPosition.call(_this, x, y)
   }
 }
 
 Draggable.prototype = Object.create(Emitter.prototype)
+
+Draggable.prototype.setPositionAsInitial = function () {
+  const { offsetLeft, offsetTop, clientWidth, clientHeight } = this.el
+
+
+  this._initialPosition.x = offsetLeft
+  this._initialPosition.y = offsetTop
+  console.log(this._initialPosition)
+}
 
 Draggable.prototype.resetPosition = function () {
   requestAnimationFrame(() => {
@@ -65,13 +84,6 @@ Draggable.prototype.setPosition = function (x, y) {
     this.el.style.left = x + 'px'
     this.el.style.top = y + 'px'
   })
-}
-
-Draggable.prototype.setPositionAsInitial = function () {
-  const rect = this.el.getBoundingClientRect()
-
-  this._initialPosition.x = rect.left
-  this._initialPosition.y = rect.top
 }
 
 Draggable.prototype.destroy = function () {

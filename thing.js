@@ -13,30 +13,28 @@ const types = [{
 
 const SPRITE_FILE = './sprites.svg'
 
-function Thing (type) {
-  if (!(this instanceof Thing)) return new Thing(type)
+function Thing (type, el) {
+  if (!(this instanceof Thing)) return new Thing(type, el)
+
+  Draggable.call(this, el)
 
   this.label = type.label
   this.sprite = type.sprite
   this.acquired = false
-  this.el = html`
-    <svg viewBox="0 0 100 100" class="thing">
-      <use xlink:href=${this.sprite}></use>
-    </svg>`
-
-  Draggable.call(this, this.el)
+  this.el.appendChild(
+    html`<svg><use xlink:href=${this.sprite}></use></svg>`
+  )
 }
 
 Thing.prototype = Object.create(Draggable.prototype)
 
-function createRandomThing () {
+function createRandomThing (el) {
   const index = Math.floor(Math.random() * types.length)
   const type = types[index]
-  const thing = Thing(type)
+  const thing = Thing(type, el)
 
   return thing
 }
-
 
 module.exports = {
   Thing,

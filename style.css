@@ -1,4 +1,9 @@
+body {
+  border: 1px solid blue;
+}
+
 :host {
+  border: 1px solid orange;
   position: relative;
   background-color: black;
   width: 800px;
@@ -25,19 +30,28 @@
   left: 0;
 }
 
-:host svg.thing {
+:host .thing {
   background-color: transparent;
-  fill: #eee;
   position: absolute;
-  width: 30px;
-  height: 30px;
   left: 50%;
   top: 25%;
-  cursor: move;
   z-index: 3;
 }
 
-:host svg.thing:hover {
+:host .thing svg {
+  background-color: transparent;
+  fill: #eee;
+  width: 30px;
+  height: 30px;
+}
+
+:host .thing svg:hover {
   stroke: white;
   stroke-width: 1px;
+  cursor: move;
+}
+
+:host .tooltip {
+  position: absolute;
+  color: white;
 }
