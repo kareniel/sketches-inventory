@@ -6,6 +6,8 @@ function Thing (type, el) {
 
   Draggable.call(this, el)
 
+  this.el.classList.add('is-born')
+
   this.label = type.label
   this.sprite = type.sprite
   this.acquired = false
