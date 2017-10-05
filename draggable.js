@@ -14,6 +14,8 @@ function Draggable (el, params = {}) {
   this.parentRect = null
   this._initialPosition = { x: el.offsetLeft, y: el.offsetTop }
 
+  const _this = this
+
   el.addEventListener('mousedown', onMouseDown)
 
   function onMouseDown (e) {
