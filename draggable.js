@@ -1,5 +1,9 @@
+const Emitter = require('./emitter')
+
 function Draggable (el) {
   if (!(this instanceof Draggable)) return new Draggable(el)
+
+  Emitter.call(this)
 
   const _this = this
   const rect = el.getBoundingClientRect()
@@ -33,19 +37,8 @@ function Draggable (el) {
     document.removeEventListener('mousemove', onMouseMove)
     
     const { x, y } = e
-    const els = elementsAtLocation(x, y)
-    
-    _this._handlers.forEach(handler => {
-      const selector = handler[0]
-      const callback = handler[1]
 
-      if (els.some(el => el.matches(selector))) {
-        console.log('match!', selector, _this)
-        callback()
-      } else {
-        _this.resetPosition.call(_this)
-      }
-    })
+    _this.emit('drop', elementsAtLocation(x, y))
   }
 
   function onMouseMove (e) {
@@ -57,6 +50,8 @@ function Draggable (el) {
       _this.setPosition.call(_this, x, y)
   }
 }
+
+Draggable.prototype = Object.create(Emitter.prototype)
 
 Draggable.prototype.resetPosition = function () {
   requestAnimationFrame(() => {
@@ -77,20 +72,6 @@ Draggable.prototype.setPositionAsInitial = function () {
 
   this._initialPosition.x = rect.left
   this._initialPosition.y = rect.top
-}
-
-Draggable.prototype.register = function (selector, callback) {
-  this._handlers.push([selector, callback])
-}
-
-Draggable.prototype.unregister = function (selector, callback) {
-  const index = this._handlers.findIndex(handler => {
-    return handler[0] == selector && handler[1] === callback
-  })
-
-  if (index > -1) {
-    this._handlers.splice(index, 1)
-  }
 }
 
 Draggable.prototype.destroy = function () {

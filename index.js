@@ -16,11 +16,17 @@ function spawnThing () {
   const thing = createRandomThing()
 
   view.appendChild(thing.el)
-  thing.register('.bag', function droppedInBag () {
-    if (!thing.acquired) {
+
+  thing.on('drop', function (elements) {
+    const droppedInBag = elements.some(el => el.matches('.bag'))
+
+    if (droppedInBag) {
+      if (thing.acquired) return
       thing.acquired = true
       thing.setPositionAsInitial()
-      spawnThing()
+      spawnThing() 
+    } else {
+      thing.resetPosition()
     }
   })
 }
